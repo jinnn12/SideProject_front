@@ -262,7 +262,9 @@ export default {
   name: 'App',
   data() {
     return {
-      apiBase: process.env.VUE_APP_API_BASE || '/api/user',
+      apiBase: window.location.hostname.includes('oysoap.store')
+        ? 'http://server.oysoap.store/api/user'
+        : process.env.VUE_APP_API_BASE || '/api/user',
       scanForm: {
         email: '',
         qrCode: '',
