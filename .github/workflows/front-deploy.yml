@@ -28,7 +28,7 @@ jobs:
       # dist폴더 생성
       - name: npm build
         working-directory: .
-        run: npm run build
+        run: npm run build 
 
       - name: setup aws cli
         uses: aws-actions/configure-aws-credentials@v2
