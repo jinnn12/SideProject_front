@@ -1,0 +1,44 @@
+name: deploy to s3, cloudfront
+# 이벤트정의 (트리거)
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # uses는 재사용이 가능한 사전에 만들어진 작업절차
+      # 소스코드 체크아웃
+      # actions : github이 개발한 공증 메서드 혹은 개인이 만든
+      - uses: actions/checkout@v2
+
+      # nodejs 설치, npm 명령어 사용하기 위함
+      - name: setup nodejs
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22'
+
+      # run은 개발자가 작업을 직접 정의, actions와 다르게 내가 직접 정의 "run!"
+      # 이 명령어는 node_modules를 만들어줌
+      - name: npm install
+        working-directory: .
+        run: npm install
+
+      # dist폴더 생성
+      - name: npm build
+        working-directory: .
+        run: npm run build
+
+      - name: setup aws cli
+        uses: aws-actions/configure-aws-credentials@v2
+        with: 
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_KEY}}
+          aws-region: "ap-northeast-2"
+
+      - name: deploy to s3
+        run: aws s3 cp ./dist s3://www.oysoap.store/ --recursive
+
+      - name: invalidate cloudfront
+        run: aws cloudfront create-invalidation --distribution-id E17A1MGC05Z83I --paths "/*"
