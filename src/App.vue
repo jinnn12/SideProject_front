@@ -262,7 +262,7 @@ export default {
   name: 'App',
   data() {
     return {
-      apiBase: '/api/user',
+      apiBase: process.env.VUE_APP_API_BASE || '/api/user',
       scanForm: {
         email: '',
         qrCode: '',
